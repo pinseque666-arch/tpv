@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TPV - Terminal Punto de Venta</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f2f5;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+        
+        .panel {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            color: #555;
+            font-size: 0.9em;
+        }
+        
+        input[type="text"], select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+            margin-bottom: 15px;
+            transition: border-color 0.2s;
+        }
+        
+        input[type="text"]:focus, select:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+        
+        .cantidad-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .cantidad-control button {
+            width: 44px;
+            height: 44px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.4em;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .btn-menos {
+            background: #e74c3c;
+            color: white;
+        }
+        
+        .btn-menos:hover {
+            background: #c0392b;
+        }
+        
+        .btn-mas {
+            background: #27ae60;
+            color: white;
+        }
+        
+        .btn-mas:hover {
+            background: #219a52;
+        }
+        
+        .cantidad-control input {
+            width: 80px;
+            text-align: center;
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 0;
+        }
+        
+        .btn-agregar {
+            width: 100%;
+            padding: 14px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .btn-agregar:hover {
+            background: #2980b9;
+        }
+        
+        .ticket {
+            background: #fffef0;
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+            padding: 20px;
+            min-height: 200px;
+        }
+        
+        .ticket-header {
+            text-align: center;
+            border-bottom: 2px dashed #999;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .ticket-header h2 {
+            font-size: 1.3em;
+            color: #2c3e50;
+        }
+        
+        .ticket-header .cliente {
+            color: #666;
+            font-size: 0.95em;
+            margin-top: 5px;
+        }
+        
+        .ticket-header .fecha {
+            color: #888;
+            font-size: 0.85em;
+            margin-top: 3px;
+        }
+        
+        .ticket-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px dotted #ccc;
+            font-size: 0.95em;
+        }
+        
+        .ticket-item .nombre {
+            flex: 1;
+        }
+        
+        .ticket-item .cantidad {
+            width: 40px;
+            text-align: center;
+            color: #666;
+        }
+        
+        .ticket-item .precio-unit {
+            width: 70px;
+            text-align: right;
+            color: #666;
+        }
+        
+        .ticket-item .subtotal {
+            width: 80px;
+            text-align: right;
+            font-weight: 600;
+        }
+        
+        .ticket-total {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 2px solid #333;
+            display: flex;
+            justify-content: space-between;
+            font-size: 1.3em;
+            font-weight: bold;
+        }
+        
+        .ticket-vacio {
+            text-align: center;
+            color: #999;
+            padding: 40px 0;
+            font-style: italic;
+        }
+        
+        .btn-imprimir {
+            width: 100%;
+            padding: 14px;
+            background: #2c3e50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: background 0.2s;
+        }
+        
+        .btn-imprimir:hover {
+            background: #1a252f;
+        }
+        
+        .btn-limpiar {
+            width: 100%;
+            padding: 10px;
+            background: #95a5a6;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95em;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        
+        .btn-limpiar:hover {
+            background: #7f8c8d;
+        }
+        
+        .btn-eliminar {
+            background: none;
+            border: none;
+            color: #e74c3c;
+            cursor: pointer;
+            font-size: 1.1em;
+            padding: 0 5px;
+        }
+        
+        .btn-eliminar:hover {
+            color: #c0392b;
+        }
+        
+        /* Estilos para impresión */
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+                max-width: 100%;
+            }
+            .panel:not(.ticket-panel) {
+                display: none;
+            }
+            .ticket {
+                border: none;
+                box-shadow: none;
+            }
+            .btn-imprimir, .btn-limpiar {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>🛒 TPV - Terminal Punto de Venta</h1>
+
+    <!-- Panel de entrada -->
+    <div class="panel">
+        <label for="cliente">Nombre del cliente:</label>
+        <input type="text" id="cliente" placeholder="Ej: Juan García">
+
+        <label for="articulo">Artículo:</label>
+        <select id="articulo">
+            <option value="">-- Selecciona un artículo --</option>
+        </select>
+
+        <label>Cantidad:</label>
+        <div class="cantidad-control">
+            <button class="btn-menos" onclick="cambiarCantidad(-1)">−</button>
+            <input type="text" id="cantidad" value="1" readonly>
+            <button class="btn-mas" onclick="cambiarCantidad(1)">+</button>
+        </div>
+
+        <button class="btn-agregar" onclick="agregarLinea()">➕ Añadir al ticket</button>
+    </div>
+
+    <!-- Panel del ticket -->
+    <div class="panel ticket-panel">
+        <div class="ticket" id="ticket">
+            <div class="ticket-vacio" id="ticket-vacio">
+                El ticket está vacío. Añade artículos arriba.
+            </div>
+            <div id="ticket-contenido" style="display: none;">
+                <div class="ticket-header">
+                    <h2>🧾 TICKET DE VENTA</h2>
+                    <div class="cliente" id="ticket-cliente">Cliente: -</div>
+                    <div class="fecha" id="ticket-fecha"></div>
+                </div>
+                <div id="lineas-ticket"></div>
+                <div class="ticket-total">
+                    <span>TOTAL:</span>
+                    <span id="total-ticket">0.00 €</span>
+                </div>
+            </div>
+        </div>
+        <button class="btn-imprimir" onclick="imprimirTicket()">🖨️ Imprimir ticket</button>
+        <button class="btn-limpiar" onclick="limpiarTicket()">🗑️ Nuevo ticket</button>
+    </div>
+
+    <script>
+        let articulos = [];
+        let lineas = [];
+
+        // Cargar artículos desde articulos.txt
+        async function cargarArticulos() {
+            try {
+                const response = await fetch('articulos.txt');
+                const texto = await response.text();
+                const lineas = texto.trim().split('\n');
+                
+                // Saltar la cabecera (primera línea)
+                for (let i = 1; i < lineas.length; i++) {
+                    const [nombre, precio] = lineas[i].split(',');
+                    if (nombre && precio) {
+                        articulos.push({
+                            nombre: nombre.trim(),
+                            precio: parseFloat(precio.trim())
+                        });
+                    }
+                }
+                
+                // Rellenar el desplegable
+                const select = document.getElementById('articulo');
+                articulos.forEach((art, index) => {
+                    const option = document.createElement('option');
+                    option.value = index;
+                    option.textContent = `${art.nombre} - ${art.precio.toFixed(2)} €`;
+                    select.appendChild(option);
+                });
+            } catch (error) {
+                alert('Error al cargar articulos.txt. Asegúrate de que existe en la misma carpeta.');
+                console.error(error);
+            }
+        }
+
+        // Cambiar cantidad con los botones + y -
+        function cambiarCantidad(delta) {
+            const input = document.getElementById('cantidad');
+            let valor = parseInt(input.value) || 1;
+            valor += delta;
+            if (valor < 1) valor = 1;
+            input.value = valor;
+        }
+
+        // Agregar línea al ticket
+        function agregarLinea() {
+            const select = document.getElementById('articulo');
+            const cantidadInput = document.getElementById('cantidad');
+            const clienteInput = document.getElementById('cliente');
+            
+            const articuloIndex = select.value;
+            const cantidad = parseInt(cantidadInput.value);
+            
+            if (articuloIndex === '') {
+                alert('Selecciona un artículo primero.');
+                return;
+            }
+            
+            const articulo = articulos[articuloIndex];
+            
+            lineas.push({
+                nombre: articulo.nombre,
+                precio: articulo.precio,
+                cantidad: cantidad,
+                subtotal: articulo.precio * cantidad
+            });
+            
+            // Actualizar nombre de cliente en el ticket si se ha introducido
+            if (clienteInput.value.trim()) {
+                document.getElementById('ticket-cliente').textContent = 'Cliente: ' + clienteInput.value.trim();
+            }
+            
+            // Actualizar fecha
+            const ahora = new Date();
+            document.getElementById('ticket-fecha').textContent = 
+                ahora.toLocaleDateString('es-ES') + ' ' + ahora.toLocaleTimeString('es-ES');
+            
+            renderizarTicket();
+            
+            // Resetear selección
+            select.value = '';
+            cantidadInput.value = '1';
+        }
+
+        // Renderizar el ticket
+        function renderizarTicket() {
+            const vacio = document.getElementById('ticket-vacio');
+            const contenido = document.getElementById('ticket-contenido');
+            const contenedor = document.getElementById('lineas-ticket');
+            
+            if (lineas.length === 0) {
+                vacio.style.display = 'block';
+                contenido.style.display = 'none';
+                return;
+            }
+            
+            vacio.style.display = 'none';
+            contenido.style.display = 'block';
+            
+            let html = '';
+            let total = 0;
+            
+            lineas.forEach((linea, index) => {
+                total += linea.subtotal;
+                html += `
+                    <div class="ticket-item">
+                        <span class="nombre">${linea.nombre}</span>
+                        <span class="cantidad">${linea.cantidad}x</span>
+                        <span class="precio-unit">${linea.precio.toFixed(2)}€</span>
+                        <span class="subtotal">${linea.subtotal.toFixed(2)}€</span>
+                        <button class="btn-eliminar" onclick="eliminarLinea(${index})" title="Eliminar">✕</button>
+                    </div>
+                `;
+            });
+            
+            contenedor.innerHTML = html;
+            document.getElementById('total-ticket').textContent = total.toFixed(2) + ' €';
+        }
+
+        // Eliminar una línea del ticket
+        function eliminarLinea(index) {
+            lineas.splice(index, 1);
+            renderizarTicket();
+        }
+
+        // Imprimir ticket
+        function imprimirTicket() {
+            if (lineas.length === 0) {
+                alert('El ticket está vacío. Añade artículos primero.');
+                return;
+            }
+            window.print();
+        }
+
+        // Limpiar ticket para uno nuevo
+        function limpiarTicket() {
+            if (lineas.length > 0 && !confirm('¿Vaciar el ticket actual?')) {
+                return;
+            }
+            lineas = [];
+            document.getElementById('cliente').value = '';
+            document.getElementById('ticket-cliente').textContent = 'Cliente: -';
+            renderizarTicket();
+        }
+
+        // Inicializar al cargar la página
+        window.onload = cargarArticulos;
+    </script>
+
+</body>
+</html>
