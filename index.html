@@ -1,467 +1,527 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TPV - Terminal Punto de Venta</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f0f2f5;
-            padding: 20px;
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        
-        h1 {
-            text-align: center;
-            color: #2c3e50;
-            margin-bottom: 20px;
-            font-size: 1.8em;
-        }
-        
-        .panel {
-            background: white;
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-        
-        label {
-            display: block;
-            margin-bottom: 6px;
-            font-weight: 600;
-            color: #555;
-            font-size: 0.9em;
-        }
-        
-        input[type="text"], select {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 1em;
-            margin-bottom: 15px;
-            transition: border-color 0.2s;
-        }
-        
-        input[type="text"]:focus, select:focus {
-            outline: none;
-            border-color: #3498db;
-        }
-        
-        .cantidad-control {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-        
-        .cantidad-control button {
-            width: 44px;
-            height: 44px;
-            border: none;
-            border-radius: 8px;
-            font-size: 1.4em;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .btn-menos {
-            background: #e74c3c;
-            color: white;
-        }
-        
-        .btn-menos:hover {
-            background: #c0392b;
-        }
-        
-        .btn-mas {
-            background: #27ae60;
-            color: white;
-        }
-        
-        .btn-mas:hover {
-            background: #219a52;
-        }
-        
-        .cantidad-control input {
-            width: 80px;
-            text-align: center;
-            font-size: 1.2em;
-            font-weight: bold;
-            margin-bottom: 0;
-        }
-        
-        .btn-agregar {
-            width: 100%;
-            padding: 14px;
-            background: #3498db;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 1.1em;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-        
-        .btn-agregar:hover {
-            background: #2980b9;
-        }
-        
-        .ticket {
-            background: #fffef0;
-            border: 2px dashed #ccc;
-            border-radius: 8px;
-            padding: 20px;
-            min-height: 200px;
-        }
-        
-        .ticket-header {
-            text-align: center;
-            border-bottom: 2px dashed #999;
-            padding-bottom: 10px;
-            margin-bottom: 15px;
-        }
-        
-        .ticket-header h2 {
-            font-size: 1.3em;
-            color: #2c3e50;
-        }
-        
-        .ticket-header .cliente {
-            color: #666;
-            font-size: 0.95em;
-            margin-top: 5px;
-        }
-        
-        .ticket-header .fecha {
-            color: #888;
-            font-size: 0.85em;
-            margin-top: 3px;
-        }
-        
-        .ticket-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 1px dotted #ccc;
-            font-size: 0.95em;
-        }
-        
-        .ticket-item .nombre {
-            flex: 1;
-        }
-        
-        .ticket-item .cantidad {
-            width: 40px;
-            text-align: center;
-            color: #666;
-        }
-        
-        .ticket-item .precio-unit {
-            width: 70px;
-            text-align: right;
-            color: #666;
-        }
-        
-        .ticket-item .subtotal {
-            width: 80px;
-            text-align: right;
-            font-weight: 600;
-        }
-        
-        .ticket-total {
-            margin-top: 15px;
-            padding-top: 15px;
-            border-top: 2px solid #333;
-            display: flex;
-            justify-content: space-between;
-            font-size: 1.3em;
-            font-weight: bold;
-        }
-        
-        .ticket-vacio {
-            text-align: center;
-            color: #999;
-            padding: 40px 0;
-            font-style: italic;
-        }
-        
-        .btn-imprimir {
-            width: 100%;
-            padding: 14px;
-            background: #2c3e50;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 1.1em;
-            font-weight: 600;
-            cursor: pointer;
-            margin-top: 15px;
-            transition: background 0.2s;
-        }
-        
-        .btn-imprimir:hover {
-            background: #1a252f;
-        }
-        
-        .btn-limpiar {
-            width: 100%;
-            padding: 10px;
-            background: #95a5a6;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 0.95em;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-        
-        .btn-limpiar:hover {
-            background: #7f8c8d;
-        }
-        
-        .btn-eliminar {
-            background: none;
-            border: none;
-            color: #e74c3c;
-            cursor: pointer;
-            font-size: 1.1em;
-            padding: 0 5px;
-        }
-        
-        .btn-eliminar:hover {
-            color: #c0392b;
-        }
-        
-        /* Estilos para impresión */
-        @media print {
-            body {
-                background: white;
-                padding: 0;
-                max-width: 100%;
-            }
-            .panel:not(.ticket-panel) {
-                display: none;
-            }
-            .ticket {
-                border: none;
-                box-shadow: none;
-            }
-            .btn-imprimir, .btn-limpiar {
-                display: none;
-            }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TPV Web Express</title>
+  <style>
+    /* Estilos Generales y Reset */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #f3f4f6;
+      color: #1f2937;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 25px;
+      color: #111827;
+      font-size: 1.8rem;
+    }
+
+    /* Layout en dos columnas principal */
+    .layout-tpv {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+    @media (min-width: 768px) {
+      .layout-tpv { grid-template-columns: 1.2fr 0.8fr; }
+    }
+
+    /* Paneles */
+    .panel {
+      background: #ffffff;
+      padding: 24px;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      height: fit-content;
+    }
+    .panel h2 {
+      font-size: 1.2rem;
+      margin-bottom: 18px;
+      border-bottom: 2px solid #f3f4f6;
+      padding-bottom: 8px;
+      color: #374151;
+    }
+
+    /* Formularios e Inputs */
+    .form-group { margin-bottom: 18px; }
+    label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 0.9rem; color: #4b5563; }
+    .lbl-centrado { text-align: center; margin-bottom: 10px; font-size: 1rem; }
+
+    input[type="text"], select {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      font-size: 1rem;
+      outline: none;
+      color: #1f2937;
+      background-color: #fff;
+    }
+    input:focus, select:focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
+    select:disabled { background-color: #f3f4f6; color: #9ca3af; cursor: not-allowed; }
+
+    /* Control de Cantidad (Grandes, Centrados y Coloreados) */
+    .cantidad-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 10px 0 20px 0;
+    }
+    .cantidad-control { 
+      display: flex; 
+      gap: 12px; 
+      align-items: center;
+    }
+    .cantidad-control input {
+      width: 85px;
+      height: 55px;
+      text-align: center;
+      font-size: 1.4rem;
+      font-weight: bold;
+      border: 2px solid #cbd5e1;
+      border-radius: 10px;
+      background: #f9fafb;
+    }
+    .btn-qty {
+      border: none;
+      width: 55px;
+      height: 55px;
+      font-size: 1.6rem;
+      font-weight: bold;
+      cursor: pointer;
+      border-radius: 10px;
+      transition: background 0.2s, transform 0.1s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .btn-qty:active { transform: scale(0.95); }
+
+    /* Variaciones de color para los botones de cantidad (Rojo y Verde) */
+    .btn-menos {
+      background-color: #ef4444;
+      color: #ffffff;
+      border: 1px solid #dc2626;
+    }
+    .btn-menos:hover {
+      background-color: #dc2626;
+    }
+
+    .btn-mas {
+      background-color: #10b981;
+      color: #ffffff;
+      border: 1px solid #059669;
+    }
+    .btn-mas:hover {
+      background-color: #059669;
+    }
+
+    /* Botones de Acción */
+    .btn-block {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: opacity 0.2s;
+    }
+    .btn-block:hover { opacity: 0.9; }
+    .btn-add { background: #2563eb; color: white; }
+    .btn-print { background: #10b981; color: white; margin-top: 15px; }
+    .btn-clear { background: #ef4444; color: white; }
+
+    /* Tabla del Ticket en Pantalla */
+    .ticket-preview {
+      min-height: 180px;
+      border: 1px dashed #cbd5e1;
+      border-radius: 8px;
+      padding: 12px;
+      background: #fafafa;
+      margin-bottom: 15px;
+    }
+    .ticket-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.95rem;
+      margin-bottom: 10px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #f3f4f6;
+    }
+    .ticket-row:last-child { border-bottom: none; }
+     
+    .ticket-detalles {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .ticket-articulo { font-weight: 500; color: #111827; }
+    .ticket-subinfo { font-size: 0.8rem; color: #6b7280; }
+
+    .ticket-derecha {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    .ticket-precio { font-weight: 600; color: #111827; }
+     
+    .btn-del {
+      background: none;
+      border: none;
+      color: #9ca3af;
+      font-size: 1.1rem;
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 4px;
+      transition: color 0.15s, background 0.15s;
+    }
+    .btn-del:hover { color: #ef4444; background: #fee2e2; }
+
+    .ticket-total {
+      display: flex;
+      justify-content: space-between;
+      font-weight: bold;
+      font-size: 1.3rem;
+      border-top: 2px solid #374151;
+      padding-top: 12px;
+      margin-top: 15px;
+      color: #111827;
+    }
+
+    /* ---- ÁREA DE IMPRESIÓN ---- */
+    #print-area { display: none; }
+
+    @media print {
+      body * { display: none !important; }
+      #print-area, #print-area * { display: block !important; }
+      #print-area .p-row { display: flex !important; justify-content: space-between !important; }
+       
+      #print-area {
+        display: block !important;
+        margin: 0;
+        padding: 0;
+        width: 80mm;
+        max-width: 80mm;
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 11pt;
+        line-height: 1.3;
+        color: #000;
+        background: #fff;
+      }
+      .p-txt-center { text-align: center !important; }
+      .p-linea { border-top: 1px dashed #000 !important; margin: 5px 0 !important; display: block !important; }
+      .p-total { font-weight: bold !important; font-size: 13pt !important; margin-top: 6px !important; border-top: 1px solid #000 !important; padding-top: 3px !important; }
+       
+      @page { margin: 0; }
+    }
+  </style>
 </head>
 <body>
 
-    <h1>🛒 TPV - Terminal Punto de Venta</h1>
+  <h1>💻 TPV Web Express</h1>
 
-    <!-- Panel de entrada -->
+  <div class="layout-tpv">
+     
     <div class="panel">
-        <label for="cliente">Nombre del cliente:</label>
-        <input type="text" id="cliente" placeholder="Ej: Juan García">
+      <h2>Nueva Línea de Venta</h2>
+       
+      <div class="form-group">
+        <label for="cliente">Nombre del Cliente:</label>
+        <input type="text" id="cliente" placeholder="Escribe el nombre del cliente...">
+      </div>
 
-        <label for="articulo">Artículo:</label>
-        <select id="articulo">
-            <option value="">-- Selecciona un artículo --</option>
+      <div class="form-group">
+        <label for="familia">Seleccionar Familia:</label>
+        <select id="familia" onchange="filtrarArticulosPorFamilia()">
+          <option value="">Cargando familias...</option>
         </select>
+      </div>
 
-        <label>Cantidad:</label>
-        <div class="cantidad-control">
-            <button class="btn-menos" onclick="cambiarCantidad(-1)">−</button>
-            <input type="text" id="cantidad" value="1" readonly>
-            <button class="btn-mas" onclick="cambiarCantidad(1)">+</button>
+      <div class="form-group">
+        <label for="articulo">Seleccionar Artículo:</label>
+        <select id="articulo" disabled>
+          <option value="">-- Selecciona primero una familia --</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="lbl-centrado">Cantidad</label>
+        <div class="cantidad-container">
+          <div class="cantidad-control">
+            <button class="btn-qty btn-menos" onclick="modificarCantidad(-1)">−</button>
+            <input type="number" id="cantidad" value="1" min="1" readonly>
+            <button class="btn-qty btn-mas" onclick="modificarCantidad(1)">+</button>
+          </div>
         </div>
+      </div>
 
-        <button class="btn-agregar" onclick="agregarLinea()">➕ Añadir al ticket</button>
+      <button class="btn-block btn-add" onclick="agregarAlTicket()">+ Añadir al Ticket</button>
     </div>
 
-    <!-- Panel del ticket -->
-    <div class="panel ticket-panel">
-        <div class="ticket" id="ticket">
-            <div class="ticket-vacio" id="ticket-vacio">
-                El ticket está vacío. Añade artículos arriba.
-            </div>
-            <div id="ticket-contenido" style="display: none;">
-                <div class="ticket-header">
-                    <h2>🧾 TICKET DE VENTA</h2>
-                    <div class="cliente" id="ticket-cliente">Cliente: -</div>
-                    <div class="fecha" id="ticket-fecha"></div>
-                </div>
-                <div id="lineas-ticket"></div>
-                <div class="ticket-total">
-                    <span>TOTAL:</span>
-                    <span id="total-ticket">0.00 €</span>
-                </div>
-            </div>
-        </div>
-        <button class="btn-imprimir" onclick="imprimirTicket()">🖨️ Imprimir ticket</button>
-        <button class="btn-limpiar" onclick="limpiarTicket()">🗑️ Nuevo ticket</button>
+    <div class="panel">
+      <h2>Resumen del Ticket</h2>
+      <div class="ticket-preview" id="ticket-preview"></div>
+      <div class="ticket-total">
+        <span>TOTAL:</span>
+        <span id="total-pantalla">0.00 €</span>
+      </div>
+
+      <button class="btn-block btn-print" onclick="imprimirTicket()">🖨 Imprimir Ticket</button>
+      <button class="btn-block btn-clear" onclick="limpiarTicket()">🗑 Vaciar</button>
     </div>
 
-    <script>
-        let articulos = [];
-        let lineas = [];
+  </div>
 
-        // Cargar artículos desde articulos.txt
-        async function cargarArticulos() {
-            try {
-                const response = await fetch('articulos.txt');
-                const texto = await response.text();
-                const lineas = texto.trim().split('\n');
-                
-                // Saltar la cabecera (primera línea)
-                for (let i = 1; i < lineas.length; i++) {
-                    const [nombre, precio] = lineas[i].split(',');
-                    if (nombre && precio) {
-                        articulos.push({
-                            nombre: nombre.trim(),
-                            precio: parseFloat(precio.trim())
-                        });
-                    }
-                }
-                
-                // Rellenar el desplegable
-                const select = document.getElementById('articulo');
-                articulos.forEach((art, index) => {
-                    const option = document.createElement('option');
-                    option.value = index;
-                    option.textContent = `${art.nombre} - ${art.precio.toFixed(2)} €`;
-                    select.appendChild(option);
-                });
-            } catch (error) {
-                alert('Error al cargar articulos.txt. Asegúrate de que existe en la misma carpeta.');
-                console.error(error);
-            }
-        }
+  <div id="print-area"></div>
 
-        // Cambiar cantidad con los botones + y -
-        function cambiarCantidad(delta) {
-            const input = document.getElementById('cantidad');
-            let valor = parseInt(input.value) || 1;
-            valor += delta;
-            if (valor < 1) valor = 1;
-            input.value = valor;
-        }
+  <script>
+    let listaArticulos = []; // Guardará objetos { familia, nombre, precio, idOriginal }
+    let lineasTicket = [];
 
-        // Agregar línea al ticket
-        function agregarLinea() {
-            const select = document.getElementById('articulo');
-            const cantidadInput = document.getElementById('cantidad');
-            const clienteInput = document.getElementById('cliente');
-            
-            const articuloIndex = select.value;
-            const cantidad = parseInt(cantidadInput.value);
-            
-            if (articuloIndex === '') {
-                alert('Selecciona un artículo primero.');
-                return;
-            }
-            
-            const articulo = articulos[articuloIndex];
-            
-            lineas.push({
-                nombre: articulo.nombre,
-                precio: articulo.precio,
-                cantidad: cantidad,
-                subtotal: articulo.precio * cantidad
-            });
-            
-            // Actualizar nombre de cliente en el ticket si se ha introducido
-            if (clienteInput.value.trim()) {
-                document.getElementById('ticket-cliente').textContent = 'Cliente: ' + clienteInput.value.trim();
-            }
-            
-            // Actualizar fecha
-            const ahora = new Date();
-            document.getElementById('ticket-fecha').textContent = 
-                ahora.toLocaleDateString('es-ES') + ' ' + ahora.toLocaleTimeString('es-ES');
-            
-            renderizarTicket();
-            
-            // Resetear selección
-            select.value = '';
-            cantidadInput.value = '1';
-        }
+    // --- GESTIÓN DE COOKIES ---
+    function setCookie(name, value, days = 30) {
+      const d = new Date();
+      d.setTime(d.getTime() + (days*24*60*60*1000));
+      document.cookie = `${name}=${encodeURIComponent(value)};expires=${d.toUTCString()};path=/;SameSite=Lax`;
+    }
 
-        // Renderizar el ticket
-        function renderizarTicket() {
-            const vacio = document.getElementById('ticket-vacio');
-            const contenido = document.getElementById('ticket-contenido');
-            const contenedor = document.getElementById('lineas-ticket');
-            
-            if (lineas.length === 0) {
-                vacio.style.display = 'block';
-                contenido.style.display = 'none';
-                return;
-            }
-            
-            vacio.style.display = 'none';
-            contenido.style.display = 'block';
-            
-            let html = '';
-            let total = 0;
-            
-            lineas.forEach((linea, index) => {
-                total += linea.subtotal;
-                html += `
-                    <div class="ticket-item">
-                        <span class="nombre">${linea.nombre}</span>
-                        <span class="cantidad">${linea.cantidad}x</span>
-                        <span class="precio-unit">${linea.precio.toFixed(2)}€</span>
-                        <span class="subtotal">${linea.subtotal.toFixed(2)}€</span>
-                        <button class="btn-eliminar" onclick="eliminarLinea(${index})" title="Eliminar">✕</button>
-                    </div>
-                `;
-            });
-            
-            contenedor.innerHTML = html;
-            document.getElementById('total-ticket').textContent = total.toFixed(2) + ' €';
-        }
+    function getCookie(name) {
+      const nameEQ = name + "=";
+      const ca = document.cookie.split(';');
+      for(let i=0; i < ca.length; i++) {
+        let c = ca[i].trim();
+        if (c.indexOf(nameEQ) === 0) return decodeURIComponent(c.substring(nameEQ.length, c.length));
+      }
+      return "";
+    }
 
-        // Eliminar una línea del ticket
-        function eliminarLinea(index) {
-            lineas.splice(index, 1);
-            renderizarTicket();
-        }
+    document.getElementById('cliente').addEventListener('input', function() {
+      setCookie('cliente', this.value);
+    });
 
-        // Imprimir ticket
-        function imprimirTicket() {
-            if (lineas.length === 0) {
-                alert('El ticket está vacío. Añade artículos primero.');
-                return;
-            }
-            window.print();
-        }
+    // --- LOGICA DE CARGA Y SELECTORES ---
+    async function cargarArticulos() {
+      try {
+        const respuesta = await fetch('articulos.txt');
+        const texto = await respuesta.text();
+        const filas = texto.trim().split('\n');
+         
+        // Procesar archivo plano asumiendo: Familia, Producto, Precio
+        listaArticulos = filas.slice(1).map((fila, index) => {
+          const partes = fila.split(',');
+          if (partes.length < 3) return null;
+          return {
+            idOriginal: index, // Para mantener la referencia exacta
+            familia: partes[0].trim(),
+            nombre: partes[1].trim(),
+            precio: parseFloat(partes[2].trim())
+          };
+        }).filter(a => a && a.familia && a.nombre && !isNaN(a.precio));
 
-        // Limpiar ticket para uno nuevo
-        function limpiarTicket() {
-            if (lineas.length > 0 && !confirm('¿Vaciar el ticket actual?')) {
-                return;
-            }
-            lineas = [];
-            document.getElementById('cliente').value = '';
-            document.getElementById('ticket-cliente').textContent = 'Cliente: -';
-            renderizarTicket();
-        }
+        // Extraer familias únicas
+        const familiasUnicas = [...new Set(listaArticulos.map(a => a.familia))].sort();
 
-        // Inicializar al cargar la página
-        window.onload = cargarArticulos;
-    </script>
+        // Llenar el selector de Familias
+        const selectorFamilia = document.getElementById('familia');
+        selectorFamilia.innerHTML = '<option value="">-- Selecciona una familia --</option>';
+        familiasUnicas.forEach(fam => {
+          const opt = document.createElement('option');
+          opt.value = fam;
+          opt.textContent = fam;
+          selectorFamilia.appendChild(opt);
+        });
 
+      } catch (error) {
+        document.getElementById('familia').innerHTML = '<option value="">Error al cargar archivo</option>';
+      }
+    }
+
+    // Ejecutado cada vez que cambia el selector de familia
+    function filtrarArticulosPorFamilia() {
+      const familiaSeleccionada = document.getElementById('familia').value;
+      const selectorArticulo = document.getElementById('articulo');
+
+      if (!familiaSeleccionada) {
+        selectorArticulo.innerHTML = '<option value="">-- Selecciona primero una familia --</option>';
+        selectorArticulo.disabled = true;
+        return;
+      }
+
+      // Filtrar el array global
+      const articulosFiltrados = listaArticulos.filter(a => a.familia === familiaSeleccionada);
+
+      // Renderizar las opciones filtradas
+      selectorArticulo.innerHTML = '<option value="">-- Selecciona un artículo --</option>';
+      articulosFiltrados.forEach(art => {
+        const opt = document.createElement('option');
+        opt.value = art.idOriginal; // Guardamos su ID único global
+        opt.textContent = `${art.nombre} (${art.precio.toFixed(2)} €)`;
+        selectorArticulo.appendChild(opt);
+      });
+
+      selectorArticulo.disabled = false;
+    }
+
+    function modificarCantidad(valor) {
+      const inputCant = document.getElementById('cantidad');
+      let actual = parseInt(inputCant.value) || 1;
+      actual = Math.max(1, actual + valor);
+      inputCant.value = actual;
+    }
+
+    // --- MANEJO DEL TICKET ---
+    function agregarAlTicket() {
+      const selectArt = document.getElementById('articulo');
+      const inputCant = document.getElementById('cantidad');
+       
+      if(selectArt.value === "") {
+        alert("Por favor, selecciona un artículo válido.");
+        return;
+      }
+
+      // Buscamos el artículo real usando el ID guardado en el value
+      const idBuscado = parseInt(selectArt.value);
+      const articuloSeleccionado = listaArticulos.find(a => a.idOriginal === idBuscado);
+      const cantidad = parseInt(inputCant.value) || 1;
+
+      const indexExistente = lineasTicket.findIndex(l => l.nombre === articuloSeleccionado.nombre);
+      if(indexExistente > -1) {
+        lineasTicket[indexExistente].cantidad += cantidad;
+      } else {
+        lineasTicket.push({
+          nombre: articuloSeleccionado.nombre,
+          precio: articuloSeleccionado.precio,
+          cantidad: cantidad
+        });
+      }
+
+      // Resetear formulario para el siguiente artículo
+      inputCant.value = 1;
+      selectArt.value = "";
+      document.getElementById('familia').value = "";
+      selectArt.disabled = true;
+      selectArt.innerHTML = '<option value="">-- Selecciona primero una familia --</option>';
+      
+      renderTicket();
+    }
+
+    function eliminarArticulo(index) {
+      lineasTicket.splice(index, 1);
+      renderTicket();
+    }
+
+    function renderTicket() {
+      const preview = document.getElementById('ticket-preview');
+      const totalPantalla = document.getElementById('total-pantalla');
+       
+      if(lineasTicket.length === 0) {
+        preview.innerHTML = '<div style="color:#9ca3af; text-align:center; padding-top:60px;">El ticket está vacío</div>';
+        totalPantalla.textContent = "0.00 €";
+        return;
+      }
+
+      let html = "";
+      let total = 0;
+
+      lineasTicket.forEach((l, index) => {
+        const subtotal = l.precio * l.cantidad;
+        total += subtotal;
+        html += `
+          <div class="ticket-row">
+            <div class="ticket-detalles">
+              <span class="ticket-articulo">${l.nombre}</span>
+              <span class="ticket-subinfo">${l.cantidad} x ${l.precio.toFixed(2)} €</span>
+            </div>
+            <div class="ticket-derecha">
+              <span class="ticket-precio">${subtotal.toFixed(2)} €</span>
+              <button class="btn-del" onclick="eliminarArticulo(${index})">✕</button>
+            </div>
+          </div>
+        `;
+      });
+
+      preview.innerHTML = html;
+      totalPantalla.textContent = `${total.toFixed(2)} €`;
+    }
+
+    function limpiarTicket() {
+      if(lineasTicket.length === 0) return;
+      if(confirm('¿Deseas vaciar por completo el ticket actual?')) {
+        lineasTicket = [];
+        renderTicket();
+      }
+    }
+
+    // --- PROCESO DE IMPRESIÓN ---
+    function imprimirTicket() {
+      if(lineasTicket.length === 0) {
+        alert("No hay artículos en el ticket para imprimir.");
+        return;
+      }
+
+      const cliente = document.getElementById('cliente').value.trim() || "Venta General";
+      const fechaHora = new Date().toLocaleString('es-ES');
+      let total = 0;
+
+      let htmlImpresion = `
+        <div class="p-txt-center">
+          <strong>*** TICKET DE VENTA ***</strong><br>
+          <span>Tienda Express S.A.</span>
+        </div>
+        <div class="p-linea"></div>
+        <div>
+          <strong>Fecha:</strong> ${fechaHora}<br>
+          <strong>Cliente:</strong> ${cliente}
+        </div>
+        <div class="p-linea"></div>
+      `;
+
+      lineasTicket.forEach(l => {
+        const subtotal = l.precio * l.cantidad;
+        total += subtotal;
+        htmlImpresion += `
+          <div class="p-row">
+            <span>${l.nombre} x${l.cantidad}</span>
+            <span>${subtotal.toFixed(2)} €</span>
+          </div>
+        `;
+      });
+
+      htmlImpresion += `
+        <div class="p-total p-row">
+          <span>TOTAL:</span>
+          <span>${total.toFixed(2)} €</span>
+        </div>
+        <div class="p-linea"></div>
+        <div class="p-txt-center" style="font-size: 10pt; margin-top:10px;">
+          ¡Gracias por su compra!
+        </div>
+      `;
+
+      document.getElementById('print-area').innerHTML = htmlImpresion;
+      window.print();
+    }
+
+    // --- AL CARGAR LA PÁGINA ---
+    window.onload = () => {
+      cargarArticulos();
+       
+      const clienteGuardado = getCookie('cliente');
+      if(clienteGuardado) {
+        document.getElementById('cliente').value = clienteGuardado;
+      }
+       
+      renderTicket();
+    };
+  </script>
 </body>
 </html>
